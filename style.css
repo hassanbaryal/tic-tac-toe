@@ -1,0 +1,75 @@
+
+html {
+    --bg-color: #FEFEFE;
+    /* --bg-color: black; */
+    --game-color: linear-gradient(90deg, rgba(204,204,204,1) 50%, rgba(254,254,254,1) 85%);
+    --cell-color: #FFFFFF;
+    height: 100%;
+    font-size: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+body {
+    height: 100%;
+}
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    flex-flow: column;
+}
+
+/* HEADER */
+header {
+    background-color: var(--bg-color);
+    height: 15%;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 3px 0px;
+}
+
+/* MAIN */
+main {
+    /* background-color: var(--bg-color); */
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* GAME CONTAINER */
+.game-container {
+    background-image: var(--game-color);
+    background-size: 300%;
+    /* background-position: right; */
+    width: 550px;
+    height: 550px;
+    border-radius: 10px;
+    
+    display: grid;
+    grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+    gap: 15px;
+
+    animation-duration: 3s;
+    animation-name: reveal;
+    animation-fill-mode: forwards;
+
+}
+
+@keyframes reveal {
+    from {background-position: right;}
+    to {background-position: left;}
+}
+
+
+
+.game-cell {
+    background-color: var(--cell-color);
+}
+
