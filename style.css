@@ -24,6 +24,7 @@ body {
 body {
     display: flex;
     flex-flow: column;
+    gap: 50px;
 }
 
 /* HEADER */
@@ -39,17 +40,33 @@ main {
     height: 100%;
 
     display: flex;
-    justify-content: center;
+    flex-flow: column;
+    justify-content: start;
     align-items: center;
+    gap: 50px;
+}
+
+/* INFO CONTAINER */
+.game-info {
+    width: 55%;
+    height: 100px;
+    font-size: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.player-one,
+.player-two {
+    font-size: 2rem;
 }
 
 /* GAME CONTAINER */
 .game-container {
     background-image: var(--game-color);
     background-size: 300%;
-    /* background-position: right; */
-    width: 550px;
-    height: 550px;
+    width: 500px;
+    height: 500px;
     border-radius: 10px;
     
     display: grid;
@@ -57,12 +74,12 @@ main {
     gap: 15px;
 
     animation-duration: 3s;
-    animation-name: reveal;
+    animation-name: reveal-board;
     animation-fill-mode: forwards;
 
 }
 
-@keyframes reveal {
+@keyframes reveal-board {
     from {background-position: right;}
     to {background-position: left;}
 }
