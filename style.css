@@ -51,7 +51,7 @@ main {
 /* INFO CONTAINER */
 .game-info {
     color: #cccccc;
-    width: 65%;
+    width: 75%;
     height: 100px;
     font-size: 1.5rem;
     display: flex;
@@ -64,6 +64,11 @@ main {
 .player-two {
     width: 170px;
     font-size: 2rem;
+}
+
+.info-board {
+    text-align: center;
+    width: 590px;
 }
 
 select {
