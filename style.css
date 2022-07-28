@@ -64,6 +64,21 @@ main {
 .player-two {
     width: 170px;
     font-size: 2rem;
+    border-radius: 10px;
+
+    transition: 0.25s;
+}
+
+.player-one {
+    border: 0px solid var(--player-one-color);
+}
+
+.player-one.active-player {
+    border-bottom: 5px solid var(--player-one-color);
+}
+
+.player-two.active-player {
+    border-bottom: 5px solid var(--player-two-color);
 }
 
 .info-board {
@@ -77,8 +92,7 @@ select {
     text-align: center;
     color: #cccccc;
     background-color: var(--bg-color);
-    border: 2px solid black;
-    border-radius: 10px;
+    border: 1px solid black;
     line-height: 1.2;
     padding: 0 5px 0 5px;
     
