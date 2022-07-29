@@ -9,6 +9,8 @@ const controller = (() => {
     //if player one is active, change to player two, else vice versa
     const changeActivePlayer = () => {
         activePlayer == 1 ? activePlayer = 2 : activePlayer = 1
+        document.querySelector(".player-one").classList.toggle("active-player")
+        document.querySelector(".player-two").classList.toggle("active-player")
     };
 
     // UPDATE INFO BOARD
