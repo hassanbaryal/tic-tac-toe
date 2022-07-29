@@ -24,7 +24,7 @@ const controller = (() => {
         let index = winConditions.findIndex(condition => (gameCells[condition[0]] == gameCells[condition[1]] && gameCells[condition[0]] == gameCells[condition[2]]));
 
         if (index !== -1) {
-            console.log("Won!! " + winConditions[index]);
+            gameBoard.toggleGameBoard(0)
         };
     };
 
@@ -32,16 +32,18 @@ const controller = (() => {
 })();
 
 const gameBoard = (function () {
-     
+    // Variable to determine stae of game, either game is done and board is deactivated (value = 0), or game is active (value = 1)
+    let gameState;
+
     let gameCells = [0,1,2,3,4,5,6,7,8];
 
     // History array
     let gameHistory = [];
 
-    const board = Array.from(document.querySelectorAll(".game-cell"));
+    const board = document.querySelectorAll(".game-cell");
     board.forEach(cell => {
         cell.addEventListener("click", e => {
-            placeMarker(e.target, controller.getActivePlayer());
+            if(e.target.nodeName == "DIV") placeMarker(e.target, controller.getActivePlayer());
         });
     });
 
@@ -67,14 +69,29 @@ const gameBoard = (function () {
             controller.changeActivePlayer();
 
             // Check win conditions
-            if (gameHistory.length >= 5) controller.checkWinCondition(gameCell);
+            if (gameHistory.length >= 5) controller.checkWinCondition(gameCells);
             
         };
         
     };
 
     //delete marker function
-    return {placeMarker}
+
+
+    function toggleGameBoard (state) {
+        if (state == 0) {
+            board.forEach(cell => {
+                if (!(cell.classList.contains("placed"))) cell.classList.toggle("placed");
+            });
+        } else {
+            board.forEach(cell => {
+                if ((cell.classList.contains("placed"))) cell.classList.toggle("placed");
+            });
+        };
+        gameState = state;
+    };
+    
+    return {placeMarker, toggleGameBoard}
 })();
 
 // CREATE PLAYER TWO WITH MULTIPLE IF ELSE
