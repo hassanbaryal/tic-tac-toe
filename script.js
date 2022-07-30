@@ -27,6 +27,7 @@ const controller = (() => {
 
         if (index !== -1) {
             gameBoard.toggleGameBoard(0)
+            gameBoard.bounceMarkers(winConditions[index])
         };
     };
 
@@ -79,8 +80,23 @@ const gameBoard = (function () {
 
     //delete marker function
 
+    // Bounce markers
+    const bounceMarkers = (markers) => {
+        let targets = []
 
-    function toggleGameBoard (state) {
+        // Toggle 'bounce' class to make winning markers bounce
+        markers.forEach(marker => {
+            let target = Array.from(board[marker].children)
+            target = target.filter(xo => !xo.classList.contains("inactive"))
+            target[0].classList.toggle("bounce")
+            targets.push(target[0])
+        })
+
+        // Remove 'bounce' class from winning markers
+        setTimeout(() => {targets.forEach(target => {target.classList.toggle("bounce")})}, 500)
+    }
+
+    const toggleGameBoard = (state) => {
         if (state == 0) {
             board.forEach(cell => {
                 if (!(cell.classList.contains("placed"))) cell.classList.toggle("placed");
@@ -93,7 +109,7 @@ const gameBoard = (function () {
         gameState = state;
     };
     
-    return {placeMarker, toggleGameBoard}
+    return {placeMarker, bounceMarkers, toggleGameBoard}
 })();
 
 // CREATE PLAYER TWO WITH MULTIPLE IF ELSE
