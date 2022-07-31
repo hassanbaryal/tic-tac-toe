@@ -9,7 +9,9 @@ const controller = (() => {
     let activePlayer = 1;
 
     const undoBtn = document.querySelector(".undo");
+    const restartBtn = document.querySelector(".reset");
     undoBtn.addEventListener("click", () => {gameBoard.deleteMarker()});
+    restartBtn.addEventListener("click", () => {gameBoard.restartBoard()});
 
     const getActivePlayer = () => {return activePlayer};
 
@@ -31,7 +33,8 @@ const controller = (() => {
         if (index !== -1) {
             gameBoard.toggleGameBoard(0);
             gameBoard.bounceMarkers(winConditions[index]);
-            undoBtn.disabled = true
+            undoBtn.disabled = true;
+            restartBtn.disabled = true;
         };
     };
 
@@ -39,7 +42,7 @@ const controller = (() => {
 })();
 
 const gameBoard = (function () {
-    // Variable to determine stae of game, either game is done and board is deactivated (value = 0), or game is active (value = 1)
+    // Variable to determine state of game, either game is done and board is deactivated (value = 0), or game is active (value = 1)
     let gameState;
 
     let gameCells = [0,1,2,3,4,5,6,7,8];
@@ -82,22 +85,19 @@ const gameBoard = (function () {
         
     };
 
-    //delete marker function
 
     const deleteMarker = () => {
-        console.log(gameHistory);
-        if (gameHistory.length === 0) {
-            // make info board say you cant detelete something that hasnt happened yet
-            // "You cannot delete the future" or something
-        } else {
+        if (!gameHistory.length === 0) {
             const targetCell = board.find(cell => cell.dataset.cell == gameHistory[gameHistory.length - 1]);
+            // Get rid of marker in cell
             Array.from(targetCell.children).forEach(marker => {
                 if (!marker.classList.contains("inactive")) marker.classList.toggle("inactive");
             });
+            // Remove the 'placed' class for specified cell
             targetCell.classList.toggle("placed")
+            // Pop out latest cell placement
             gameHistory.pop();
             controller.changeActivePlayer();
-            // UPDATE INFO BOARD TO SAY UNDOED CELL
         };
     };
 
@@ -117,6 +117,11 @@ const gameBoard = (function () {
         setTimeout(() => {targets.forEach(target => {target.classList.toggle("bounce")})}, 500);
     };
 
+    const restartBoard = () => {
+        let x = gameHistory.length
+        for (let i = 0; i <= x; i++) deleteMarker();
+    }
+
     const toggleGameBoard = (state) => {
         if (state == 0) {
             board.forEach(cell => {
@@ -130,7 +135,7 @@ const gameBoard = (function () {
         gameState = state;
     };
     
-    return {placeMarker, deleteMarker, bounceMarkers, toggleGameBoard}
+    return {placeMarker, deleteMarker, bounceMarkers, restartBoard, toggleGameBoard}
 })();
 
 // CREATE PLAYER TWO WITH MULTIPLE IF ELSE
