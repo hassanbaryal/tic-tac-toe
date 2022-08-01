@@ -1,7 +1,7 @@
 // Undo button
 // Restart button
 // Update Info Board, maybe "player X has placed in cell 4", "You can't do that!!", "Player has won!"
-// AI, playerTwo function
+// AI, playerTwo function. Disabled Undo button if playing against AI, or when undo is clicked, undo twice instead of once
 
 
 
@@ -25,7 +25,7 @@ const controller = (() => {
     // UPDATE INFO BOARD
 
     // CHECK WIN CONDITION
-    const checkWinCondition = (gameCells) => {
+    const checkWinCondition = (gameCells, gameHistory) => {
         let winConditions = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]];
 
         let index = winConditions.findIndex(condition => (gameCells[condition[0]] == gameCells[condition[1]] && gameCells[condition[0]] == gameCells[condition[2]]));
@@ -43,16 +43,29 @@ const controller = (() => {
                 gameBoard.restartBoard(false);
             }, 3000);
             // changeActivePlayer();
-        };
+        } else if (gameHistory.length == 9) {
+            gameBoard.toggleGameBoard(0);
+            gameBoard.resetGameCells();
+            undoBtn.disabled = true;
+            restartBtn.disabled = true;
+            updateInfoBoard('Tie')
+            setTimeout(() => {
+                undoBtn.disabled = false;
+                restartBtn.disabled = false;
+                gameBoard.restartBoard(false);
+            }, 3000);
+        }
     };
 
     const updateInfoBoard = (player) => {
         let text = "";
         if (player == "One") {
             text += 'Player One has won!';
-        } else {
+        } else if (player == "Two") {
             text += 'Player Two has won!';
-        };
+        } else {
+            text += 'It\'s a tie!'
+        }
 
         text += ' Starting next round in';
 
@@ -102,7 +115,7 @@ const gameBoard = (function () {
             controller.changeActivePlayer();
 
             // Check win conditions
-            if (gameHistory.length >= 5) controller.checkWinCondition(gameCells);
+            if (gameHistory.length >= 5) controller.checkWinCondition(gameCells, gameHistory);
         };
         
     };
