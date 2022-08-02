@@ -16,10 +16,15 @@ const controller = (() => {
     const getActivePlayer = () => {return activePlayer};
 
     //if player one is active, change to player two, else vice versa
-    const changeActivePlayer = () => {
+    const changeActivePlayer = (gameState = 1) => {
         activePlayer == 1 ? activePlayer = 2 : activePlayer = 1;
         document.querySelector(".player-one").classList.toggle("active-player");
         document.querySelector(".player-two").classList.toggle("active-player");
+        if (activePlayer == 2 && gameState == 1) {
+            playerTwo.makeMove();
+        } else if (activePlayer == 2 && gameState == 0) {
+            setTimeout(playerTwo.makeMove, 3000);
+        };
     };
 
     // UPDATE INFO BOARD
@@ -34,9 +39,10 @@ const controller = (() => {
             gameBoard.toggleGameBoard(0);
             gameBoard.bounceMarkers(winConditions[index]);
             gameBoard.resetGameCells();
+            playerTwo.resetTargetCells();
             undoBtn.disabled = true;
             restartBtn.disabled = true;
-            activePlayer == 1 ? updateInfoBoard("Two") : updateInfoBoard("One");
+            activePlayer == 1 ? updateInfoBoard("One") : updateInfoBoard("Two");
             setTimeout(() => {
                 undoBtn.disabled = false;
                 restartBtn.disabled = false;
@@ -46,6 +52,7 @@ const controller = (() => {
         } else if (gameHistory.length == 9) {
             gameBoard.toggleGameBoard(0);
             gameBoard.resetGameCells();
+            playerTwo.resetTargetCells();
             undoBtn.disabled = true;
             restartBtn.disabled = true;
             updateInfoBoard('Tie')
@@ -87,8 +94,6 @@ const gameBoard = (function () {
     // History array
     let gameHistory = [];
 
-    const resetGameCells = () => gameCells = [0,1,2,3,4,5,6,7,8];
-
     const board = Array.from(document.querySelectorAll(".game-cell"));
     board.forEach(cell => {
         cell.addEventListener("click", e => {
@@ -97,9 +102,14 @@ const gameBoard = (function () {
     });
 
     
+    const resetGameCells = () => gameCells = [0,1,2,3,4,5,6,7,8];
+
+    const getBoard = () => {return board};
+
+    const getGameState = () => {return gameState};
 
     //place marker function
-    const placeMarker = (cell, activePlayer) => {
+    const placeMarker = (cell, activePlayer, roundEnded = false) => {
         if (!cell.classList.contains("placed")) {
             // Place Marker
             activePlayer == 1 ? cell.querySelector(".X").classList.toggle("inactive") : cell.querySelector(".O").classList.toggle("inactive");
@@ -111,11 +121,19 @@ const gameBoard = (function () {
             activePlayer == 1 ? gameCells[cell.dataset.cell - 1] = 'X' : gameCells[cell.dataset.cell - 1] = 'O';
             gameHistory.push(cell.dataset.cell);
 
-            // Change active player
-            controller.changeActivePlayer();
-
             // Check win conditions
             if (gameHistory.length >= 5) controller.checkWinCondition(gameCells, gameHistory);
+
+            // Change active player
+            if (gameState == 0) {
+                // If the game is restarting, send in 0 to delay AI player two move till game starts again
+                controller.changeActivePlayer(0);
+            } else {
+                controller.changeActivePlayer();
+            }
+            
+
+            
         };
         
     };
@@ -164,15 +182,13 @@ const gameBoard = (function () {
                     if (!marker.classList.contains("inactive")) marker.classList.toggle("inactive");
                 });
             });
-            // Other player starts next round
-            if (gameHistory[0] == 'X' && controller.getActivePlayer() == 1) {
-                controller.changeActivePlayer();
-            } else if (gameHistory[0] == 'O' && controller.getActivePlayer() == 2) {
-                controller.changeActivePlayer();
-            };
+
+            //Enable Board
+            toggleGameBoard(1);
+
             // Empty game history
             gameHistory = [];
-            toggleGameBoard(1);
+            
         } 
     };
 
@@ -190,13 +206,49 @@ const gameBoard = (function () {
         gameState = state;
     };
     
-    return {resetGameCells, placeMarker, deleteMarker, bounceMarkers, restartBoard, toggleGameBoard}
+    return {resetGameCells, getBoard, getGameState, placeMarker, deleteMarker, bounceMarkers, restartBoard, toggleGameBoard}
 })();
 
 // CREATE PLAYER TWO WITH MULTIPLE IF ELSE
 // THAT CHECKS STATE OF PLAYER TWO (i.e if tis easy, medium, etc.) AND EXECUTES AI STUFF OR NOTHING IF CUSTOM PLAYER TWO
 // AI will click one of the cells
-const createPlayer = () => {
-    let playerCells = []
+const playerTwo = (() => {
 
-}
+    let targetCells = [0,1,2,3,4,5,6,7,8]
+
+    const playerSelector = document.querySelector("#player-two");
+    playerSelector.addEventListener('change', (e) => {
+        gameBoard.restartBoard();
+        // Reset so player can go first
+        if (controller.getActivePlayer() == 2) controller.changeActivePlayer();
+
+        // disable btns (maybe display none, or make textContent include (disabled) )
+    });
+
+    const resetTargetCells = () => {
+        targetCells = [0,1,2,3,4,5,6,7,8];
+    };
+
+
+    const makeMove = () => {
+        if (playerSelector.value == 'Easy') {
+            const board = gameBoard.getBoard();
+            while (true) {
+                let index = Math.floor(Math.random() * targetCells.length);
+                if (!board[targetCells[index]].classList.contains("placed")) {
+                    setTimeout(() => {
+                        board[targetCells[index]].click();
+                        targetCells.splice(index, 1);
+                    },500);
+                    break;
+                } else {
+                    targetCells.splice(index, 1);
+                };
+            };
+        } else if (playerSelector.value == 'Ussop') {
+            //
+        };
+    };
+
+    return {resetTargetCells, makeMove};
+})();
